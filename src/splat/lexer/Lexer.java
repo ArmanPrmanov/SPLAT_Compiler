@@ -12,7 +12,7 @@ public class Lexer {
 	private File progFile;
 
 	private List<String> StatementTokenList = Arrays.asList("if", "while", "begin", "end", "program", "do", "return", "then", "is", "print", "print_line");
-	private List<String> OperatorTokenList = Arrays.asList("and", "or", "not", ">", "<", ">=", "<=", "=", "==", "-", "+", "*", "/", "%");
+	private List<String> OperatorTokenList = Arrays.asList("and", "or", "not", ">", "<", ":=", ">=", "<=", "==", "-", "+", "*", "/", "%");
 	private List<String> SpecialCharTokenList = Arrays.asList("(", ")", ";", ":", ",");
 
 	private enum LexState
@@ -60,10 +60,10 @@ public class Lexer {
 						tokenValue.append(currentCharValue);
 						state = LexState.kFormStringValue;
 					}
-					else if (currentCharValue == '=' || currentCharValue == '>' || currentCharValue == '<')
+					else if (currentCharValue == ':' || currentCharValue == '=' ||
+							currentCharValue == '>' || currentCharValue == '<')
 					{
 						tokenValue.append(currentCharValue);
-
 						state = LexState.kFormTwoCharOperator;
 					}
 					else if (isOperator(currentCharValue) || isSpecialChar(currentCharValue))
@@ -76,7 +76,6 @@ public class Lexer {
 					}
 					else if (currentCharValue == ' ' || currentCharValue == '\t')
 					{
-
 					}
 					else if (currentCharValue == '\r')
 					{
@@ -110,7 +109,13 @@ public class Lexer {
 						} else if (currentCharValue == '"') {
 							state = LexState.kFormStringValue;
 							continue;
-						} else if (!isOperator(currentCharValue) &&
+						} else if (currentCharValue == ':' || currentCharValue == '='
+								|| currentCharValue == '<' || currentCharValue == '>'){
+							tokenValue.append(currentCharValue);
+							state = LexState.kFormTwoCharOperator;
+							continue;
+						}
+						else if (!isOperator(currentCharValue) &&
 								!isSpecialChar(currentCharValue) &&
 								currentCharValue != ' ' &&
 								currentCharValue != '\t' &&
@@ -136,59 +141,71 @@ public class Lexer {
 						throw new LexException(currentCharValue + "", line, column);
 					}
 				} else if (state == LexState.kFormTwoCharOperator) {
-					if (currentCharValue == '=')
-					{
+					char firstChar = tokenValue.charAt(0);
+					if ((firstChar == ':' || firstChar == '=' ||
+							firstChar == '<' || firstChar == '>') &&
+							tokenValue.length() == 1
+							&& currentCharValue == '='
+					){
 						tokenValue.append(currentCharValue);
-						if (tokenValue.length() > 2) {
+						tokens.add(new Token(tokenValue.toString(), line, column));
+						tokenValue = new StringBuilder();
+						state = LexState.kInit;
+						continue;
+					}
+					else if ((firstChar == ':' ||
+							firstChar == '<' || firstChar == '>') &&
+							tokenValue.length() == 1)
+					{
+						tokens.add(new Token(tokenValue.toString(), line, column));
+						tokenValue = new StringBuilder();
+						state = LexState.kInit;
+
+						if (Character.isLetterOrDigit(currentCharValue) || currentCharValue == '_')
+						{
+							tokenValue.append(currentCharValue);
+							state = LexState.kFormValue;
+						}
+						else if (currentCharValue == '"')
+						{
+							tokenValue.append(currentCharValue);
+							state = LexState.kFormStringValue;
+						}
+						else if (currentCharValue == ':' || currentCharValue == '=' ||
+								currentCharValue == '>' || currentCharValue == '<')
+						{
+							tokenValue.append(currentCharValue);
+
+							state = LexState.kFormTwoCharOperator;
+						}
+						else if (isOperator(currentCharValue) || isSpecialChar(currentCharValue))
+						{
+							tokenValue.append(currentCharValue);
+							if (tokenValue.length() > 0) {
+								tokens.add(new Token(tokenValue.toString(), line, column));
+							}
+							state = LexState.kInit;
+						}
+						else if (currentCharValue == ' ' || currentCharValue == '\t')
+						{
+						}
+						else if (currentCharValue == '\r')
+						{
+						}
+						else if (currentCharValue == '\n')
+						{
+							tokenValue = new StringBuilder();
+							line++;
+							column = 0;
+						}
+						else
+						{
 							throw new LexException(currentCharValue + "", line, column);
 						}
 					}
-					state = LexState.kInit;
-//					else {
-//						tokenValue = new StringBuilder();
-//
-//						if (Character.isLetterOrDigit(currentCharValue) || currentCharValue == '_')
-//						{
-//							tokenValue.append(currentCharValue);
-//							state = LexState.kFormValue;
-//						}
-//						else if (currentCharValue == '"')
-//						{
-//							tokenValue.append(currentCharValue);
-//							state = LexState.kFormStringValue;
-//						}
-//						else if (currentCharValue == '=' || currentCharValue == '>' || currentCharValue == '<')
-//						{
-//							tokenValue.append(currentCharValue);
-//
-//							state = LexState.kFormTwoCharOperator;
-//						}
-//						else if (isOperator(currentCharValue) || isSpecialChar(currentCharValue))
-//						{
-//							tokenValue.append(currentCharValue);
-//							if (tokenValue.length() > 0) {
-//								tokens.add(new Token(tokenValue.toString(), line, column));
-//							}
-//							state = LexState.kInit;
-//						}
-//						else if (currentCharValue == ' ' || currentCharValue == '\t')
-//						{
-//
-//						}
-//						else if (currentCharValue == '\r')
-//						{
-//						}
-//						else if (currentCharValue == '\n')
-//						{
-//							tokenValue = new StringBuilder();
-//							line++;
-//							column = 0;
-//						}
-//						else
-//						{
-//							throw new LexException(currentCharValue + "", line, column);
-//						}
-//					}
+					else {
+						throw new LexException(currentCharValue + "", line, column);
+					}
 				}
 			}
 
