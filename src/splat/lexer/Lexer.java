@@ -11,7 +11,6 @@ import java.util.List;
 public class Lexer {
 	private File progFile;
 
-	private List<String> StatementTokenList = Arrays.asList("if", "while", "begin", "end", "program", "do", "return", "then", "is", "print", "print_line");
 	private List<String> OperatorTokenList = Arrays.asList("and", "or", "not", ">", "<", ":=", ">=", "<=", "==", "-", "+", "*", "/", "%");
 	private List<String> SpecialCharTokenList = Arrays.asList("(", ")", ";", ":", ",");
 
@@ -101,18 +100,30 @@ public class Lexer {
 							tokens.add(new Token(tokenValue.toString(), line, column));
 							tokenValue = new StringBuilder();
 						}
+
 						if (currentCharValue == '\n')
 						{
 							tokenValue = new StringBuilder();
 							line++;
 							column = 0;
-						} else if (currentCharValue == '"') {
+							state = LexState.kInit;
+							continue;
+						}
+						else if (currentCharValue == '"') {
 							state = LexState.kFormStringValue;
 							continue;
-						} else if (currentCharValue == ':' || currentCharValue == '='
+						}
+						else if (currentCharValue == ':' || currentCharValue == '='
 								|| currentCharValue == '<' || currentCharValue == '>'){
 							tokenValue.append(currentCharValue);
 							state = LexState.kFormTwoCharOperator;
+							continue;
+						}
+						else if (isSpecialChar(currentCharValue)) {
+							tokenValue.append(currentCharValue);
+							tokens.add(new Token(tokenValue.toString(), line, column));
+							tokenValue = new StringBuilder();
+							state = LexState.kInit;
 							continue;
 						}
 						else if (!isOperator(currentCharValue) &&
@@ -124,8 +135,6 @@ public class Lexer {
 						{
 							throw new LexException(currentCharValue + "", line, column);
 						}
-
-						state = LexState.kInit;
 					}
 				} else if (state == LexState.kFormStringValue) {
 					tokenValue.append(currentCharValue);
