@@ -119,7 +119,7 @@ public class Lexer {
 							state = LexState.kFormTwoCharOperator;
 							continue;
 						}
-						else if (isSpecialChar(currentCharValue)) {
+						else if (isOperator(currentCharValue) || isSpecialChar(currentCharValue)) {
 							tokenValue.append(currentCharValue);
 							tokens.add(new Token(tokenValue.toString(), line, column));
 							tokenValue = new StringBuilder();
