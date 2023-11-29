@@ -2,6 +2,8 @@ package splat.parser.elements;
 
 import splat.lexer.Token;
 
+import java.util.Map;
+
 public abstract class Expression extends ASTElement {
 
 	public Expression(Token tok) {
@@ -27,8 +29,8 @@ public abstract class Expression extends ASTElement {
 	 * contains variables or parameters -- we use this map to keep track of
 	 * what items are currently in scope, and what their types are
 	 */
-//	 public abstract Type analyzeAndGetType(Map<String, FunctionDecl> funcMap,
-//	                                        Map<String, Type> varAndParamMap);
+	 public abstract Type analyzeAndGetType(Map<String, FunctionDecl> funcMap,
+											Map<String, Type> varAndParamMap);
 	
 	/**
 	 * This will be needed for Phase 4 - this abstract method will need to be

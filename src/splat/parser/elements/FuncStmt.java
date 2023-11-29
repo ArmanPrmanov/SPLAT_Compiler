@@ -3,6 +3,7 @@ package splat.parser.elements;
 import splat.lexer.Token;
 
 import java.util.List;
+import java.util.Map;
 
 public class FuncStmt extends Statement{
 
@@ -20,5 +21,10 @@ public class FuncStmt extends Statement{
     }
     public List<Expression> getArguments() {
         return args;
+    }
+
+    @Override
+    public void analyze(Map<String, FunctionDecl> funcMap, Map<String, Type> varAndParamMap) {
+
     }
 }

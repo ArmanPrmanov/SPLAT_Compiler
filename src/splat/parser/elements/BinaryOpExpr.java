@@ -2,6 +2,8 @@ package splat.parser.elements;
 
 import splat.lexer.Token;
 
+import java.util.Map;
+
 public class BinaryOpExpr extends Expression {
 
     private Expression expr_1;
@@ -25,5 +27,10 @@ public class BinaryOpExpr extends Expression {
 
     public BinaryOp getBinaryOp() {
         return binaryOp;
+    }
+
+    @Override
+    public Type analyzeAndGetType(Map<String, FunctionDecl> funcMap, Map<String, Type> varAndParamMap) {
+        return null;
     }
 }

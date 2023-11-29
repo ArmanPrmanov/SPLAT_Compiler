@@ -2,6 +2,8 @@ package splat.parser.elements;
 
 import splat.lexer.Token;
 
+import java.util.Map;
+
 public class UnaryOpExpr extends Expression{
 
     private UnaryOp unaryOp;
@@ -19,5 +21,10 @@ public class UnaryOpExpr extends Expression{
 
     public UnaryOp getUnaryOp() {
         return unaryOp;
+    }
+
+    @Override
+    public Type analyzeAndGetType(Map<String, FunctionDecl> funcMap, Map<String, Type> varAndParamMap) {
+        return null;
     }
 }

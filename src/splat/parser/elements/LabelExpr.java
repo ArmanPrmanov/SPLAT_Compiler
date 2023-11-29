@@ -2,6 +2,8 @@ package splat.parser.elements;
 
 import splat.lexer.Token;
 
+import java.util.Map;
+
 public class LabelExpr extends Expression{
     private String value;
 
@@ -12,5 +14,10 @@ public class LabelExpr extends Expression{
 
     public String getValue() {
         return value;
+    }
+
+    @Override
+    public Type analyzeAndGetType(Map<String, FunctionDecl> funcMap, Map<String, Type> varAndParamMap) {
+        return null;
     }
 }

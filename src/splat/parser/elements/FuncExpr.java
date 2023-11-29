@@ -3,6 +3,7 @@ package splat.parser.elements;
 import splat.lexer.Token;
 
 import java.util.List;
+import java.util.Map;
 
 public class FuncExpr extends Expression{
 
@@ -20,5 +21,10 @@ public class FuncExpr extends Expression{
     }
     public List<Expression> getArguments() {
         return args;
+    }
+
+    @Override
+    public Type analyzeAndGetType(Map<String, FunctionDecl> funcMap, Map<String, Type> varAndParamMap) {
+        return null;
     }
 }

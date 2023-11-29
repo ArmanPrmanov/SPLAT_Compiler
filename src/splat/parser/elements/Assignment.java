@@ -2,6 +2,8 @@ package splat.parser.elements;
 
 import splat.lexer.Token;
 
+import java.util.Map;
+
 public class Assignment extends Statement {
     private String label;
     private Expression expr;
@@ -18,5 +20,10 @@ public class Assignment extends Statement {
 
     public Expression getExpression() {
         return expr;
+    }
+
+    @Override
+    public void analyze(Map<String, FunctionDecl> funcMap, Map<String, Type> varAndParamMap) {
+
     }
 }

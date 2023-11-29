@@ -3,6 +3,7 @@ package splat.parser.elements;
 import splat.lexer.Token;
 
 import java.util.List;
+import java.util.Map;
 
 public class IfThen extends Statement{
 
@@ -20,5 +21,10 @@ public class IfThen extends Statement{
     }
     public List<Statement> getThenStatements() {
         return thenStmts;
+    }
+
+    @Override
+    public void analyze(Map<String, FunctionDecl> funcMap, Map<String, Type> varAndParamMap) {
+
     }
 }

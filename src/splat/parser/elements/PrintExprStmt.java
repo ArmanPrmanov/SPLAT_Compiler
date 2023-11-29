@@ -2,6 +2,8 @@ package splat.parser.elements;
 
 import splat.lexer.Token;
 
+import java.util.Map;
+
 public class PrintExprStmt extends Statement{
     private Expression expr;
     public PrintExprStmt(Expression expr, Token tok) {
@@ -11,5 +13,10 @@ public class PrintExprStmt extends Statement{
 
     public Expression getExpr() {
         return expr;
+    }
+
+    @Override
+    public void analyze(Map<String, FunctionDecl> funcMap, Map<String, Type> varAndParamMap) {
+
     }
 }
