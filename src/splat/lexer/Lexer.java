@@ -236,8 +236,4 @@ public class Lexer {
 	private boolean isSpecialChar(char ch) {
 		return SpecialCharTokenList.contains(ch+"");
 	}
-
-	private boolean isValidCharacter(char ch) {
-		return Character.isLetterOrDigit(ch) || ch == '_';
-	}
 }
