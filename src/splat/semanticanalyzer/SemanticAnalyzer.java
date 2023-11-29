@@ -1,15 +1,11 @@
 package splat.semanticanalyzer;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import splat.parser.elements.Declaration;
-import splat.parser.elements.FunctionDecl;
-import splat.parser.elements.ProgramAST;
-import splat.parser.elements.Statement;
-import splat.parser.elements.Type;
-import splat.parser.elements.VariableDecl;
+import splat.parser.elements.*;
 
 public class SemanticAnalyzer {
 
@@ -64,13 +60,42 @@ public class SemanticAnalyzer {
 	private Map<String, Type> getVarAndParamMap(FunctionDecl funcDecl) {
 		
 		// FIXME: Somewhat similar to setProgVarAndFuncMaps()
-		return null;
+		Map<String, Type> varAndParamMap = new HashMap<>();
+
+		for (Parameter param : funcDecl.getParams()) {
+			String paramName = param.getLabel();
+			Type paramType = param.getType();
+			varAndParamMap.put(paramName, paramType);
+		}
+
+		for (Declaration decl : funcDecl.getLocVardecls()) {
+			if (decl instanceof VariableDecl) {
+				VariableDecl varDecl = (VariableDecl) decl;
+				String varName = varDecl.getLabel();
+				Type varType = varDecl.getType();
+				varAndParamMap.put(varName, varType);
+			}
+		}
+
+		return varAndParamMap;
 	}
 
 	private void checkNoDuplicateFuncLabels(FunctionDecl funcDecl) 
 									throws SemanticAnalysisException {
 		
 		// FIXME: Similar to checkNoDuplicateProgLabels()
+		Set<String> labels = new HashSet<String>();
+
+		for (Declaration decl : funcDecl.getLocVardecls()) {
+			String label = decl.getLabel().toString();
+
+			if (labels.contains(label)) {
+				throw new SemanticAnalysisException("Cannot have duplicate label '"
+						+ label + "' in program", decl);
+			} else {
+				labels.add(label);
+			}
+		}
 	}
 	
 	private void checkNoDuplicateProgLabels() throws SemanticAnalysisException {

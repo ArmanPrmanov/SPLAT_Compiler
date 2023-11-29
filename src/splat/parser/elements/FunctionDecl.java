@@ -24,6 +24,14 @@ public class FunctionDecl extends Declaration {
 		this.stmts = stmts;
 	}
 
+	public List<Parameter> getParams() {
+		return params;
+	}
+
+	public List<VariableDecl> getLocVardecls() {
+		return locVardecls;
+	}
+
 	public List<Statement> getStmts() {
 		return stmts;
 	}
