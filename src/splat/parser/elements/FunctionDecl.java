@@ -5,7 +5,6 @@ import java.util.List;
 public class FunctionDecl extends Declaration {
 
 	// Need to add some fields
-	private String label;
 	private List<Parameter> params;
 	private ReturnType returnType;
 	private List<VariableDecl> locVardecls;
@@ -18,17 +17,15 @@ public class FunctionDecl extends Declaration {
 						List<VariableDecl> locVardecls,
 						List<Statement> stmts,
 						Token tok) {
-		super(tok);
-		this.label = label;
+		super(tok, label);
 		this.params = params;
 		this.returnType = returnType;
 		this.locVardecls = locVardecls;
 		this.stmts = stmts;
 	}
 
-	// Getters?
-	public String getLabel() {
-		return label;
+	public List<Statement> getStmts() {
+		return stmts;
 	}
 	
 	// Fix this as well

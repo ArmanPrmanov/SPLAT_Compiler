@@ -2,6 +2,8 @@ package splat.parser.elements;
 
 import splat.lexer.Token;
 
+import java.util.Map;
+
 public abstract class Statement extends ASTElement {
 
 	public Statement(Token tok) {
@@ -16,8 +18,8 @@ public abstract class Statement extends ASTElement {
 	 * performing semantic analysis and type retrieval for the 
 	 * sub-expressions.
 	 */
-//	 public abstract void analyze(Map<String, FunctionDecl> funcMap,
-//	                              Map<String, Type> varAndParamMap);
+	 public abstract void analyze(Map<String, FunctionDecl> funcMap,
+								  Map<String, Type> varAndParamMap);
 	
 	/**
 	 * This will be needed for Phase 4 - this abstract method will need to be
