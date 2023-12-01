@@ -591,7 +591,7 @@ public class Parser {
 	}
 
 	private boolean isBoolLiteral(String value) {
-        return value == "true" || value == "false";
+        return value.equals("true") || value.equals("false");
 	}
 
 	private boolean isStringLiteral(String value) {
