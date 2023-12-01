@@ -1,9 +1,7 @@
 package splat.semanticanalyzer;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import splat.parser.elements.*;
 
@@ -11,8 +9,8 @@ public class SemanticAnalyzer {
 
 	private ProgramAST progAST;
 	
-	private Map<String, FunctionDecl> funcMap;
-	private Map<String, Type> progVarMap;
+	private Map<String, FunctionDecl> funcMap = new HashMap<>();
+	private Map<String, Type> progVarMap = new HashMap<>();
 	
 	public SemanticAnalyzer(ProgramAST progAST) {
 		this.progAST = progAST;
@@ -38,7 +36,8 @@ public class SemanticAnalyzer {
 		for (Statement stmt : progAST.getStmts()) {
 			stmt.analyze(funcMap, progVarMap);
 		}
-		
+
+		checkProgramBodyForRetStmt(progAST.getStmts());
 	}
 
 	private void analyzeFuncDecl(FunctionDecl funcDecl) throws SemanticAnalysisException {
@@ -54,9 +53,75 @@ public class SemanticAnalyzer {
 		for (Statement stmt : funcDecl.getStmts()) {
 			stmt.analyze(funcMap, varAndParamMap);
 		}
+
+		if (funcDecl.getReturnType().type.getValue().equals("void")) {
+			checkVoidStmtRetType(funcDecl.getStmts());
+		} else {
+			checkNonVoidStmtRetType(funcDecl.getStmts(), funcDecl);
+		}
 	}
-	
-	
+
+	private void checkNonVoidStmtRetType(List<Statement> stmts, FunctionDecl funcDecl) throws SemanticAnalysisException {
+		for (Statement stmt : stmts){
+			if (stmt instanceof ReturnVoidStmt)
+				throw new SemanticAnalysisException("Must return a value", stmt);
+		}
+
+		Map<String, Type> varAndParamMap = getVarAndParamMap(funcDecl);
+		var lastStmt = stmts.get(stmts.size() - 1);
+		if (lastStmt instanceof ReturnExprStmt) {
+			var retStmt = (ReturnExprStmt) lastStmt;
+			Type retStmtType = retStmt.getExpr().analyzeAndGetType(funcMap, varAndParamMap);
+			if (!retStmtType.getValue().equals(funcDecl.getReturnType().type.getValue()))
+				throw new SemanticAnalysisException("Return types different", retStmt);
+		} else if (lastStmt instanceof IfThenElse) {
+			var ifThenElseStmt = (IfThenElse) lastStmt;
+			checkNonVoidStmtRetType(ifThenElseStmt.getThenStatements(), funcDecl);
+			checkNonVoidStmtRetType(ifThenElseStmt.getElseStatements(), funcDecl);
+		} else if (lastStmt instanceof IfThen) {
+			var ifThenStmt = (IfThen) lastStmt;
+			checkNonVoidStmtRetType(ifThenStmt.getThenStatements(), funcDecl);
+		} else {
+			throw new SemanticAnalysisException("ReturnStmt is missing", lastStmt);
+		}
+	}
+
+	private void checkVoidStmtRetType(List<Statement> stmts) throws SemanticAnalysisException {
+		for (Statement stmt : stmts) {
+			if (stmt instanceof ReturnExprStmt) {
+				throw new SemanticAnalysisException("Must NOT return a value", stmt);
+			} else if (stmt instanceof IfThenElse) {
+				var ifThenElseStmt = (IfThenElse) stmt;
+				checkVoidStmtRetType(ifThenElseStmt.getThenStatements());
+				checkVoidStmtRetType(ifThenElseStmt.getElseStatements());
+			} else if (stmt instanceof IfThen) {
+				var ifThenStmt = (IfThen) stmt;
+				checkVoidStmtRetType(ifThenStmt.getThenStatements());
+			} else if (stmt instanceof WhileLoop) {
+				var whileLoopStmt = (WhileLoop) stmt;
+				checkVoidStmtRetType(whileLoopStmt.getStatements());
+			}
+		}
+	}
+
+	private void checkProgramBodyForRetStmt(List<Statement> stmts) throws SemanticAnalysisException{
+		for (Statement stmt : stmts){
+			if (stmt instanceof ReturnExprStmt || stmt instanceof ReturnVoidStmt) {
+				throw new SemanticAnalysisException("Can't have return in program body", stmt);
+			} else if (stmt instanceof IfThenElse) {
+				var ifThenElseStmt = (IfThenElse) stmt;
+				checkProgramBodyForRetStmt(ifThenElseStmt.getThenStatements());
+				checkProgramBodyForRetStmt(ifThenElseStmt.getElseStatements());
+			} else if (stmt instanceof IfThen) {
+				var ifThenStmt = (IfThen) stmt;
+				checkProgramBodyForRetStmt(ifThenStmt.getThenStatements());
+			} else if (stmt instanceof WhileLoop) {
+				var whileLoopStmt = (WhileLoop) stmt;
+				checkProgramBodyForRetStmt(whileLoopStmt.getStatements());
+			}
+		}
+	}
+
 	private Map<String, Type> getVarAndParamMap(FunctionDecl funcDecl) {
 		
 		// FIXME: Somewhat similar to setProgVarAndFuncMaps()
@@ -68,13 +133,10 @@ public class SemanticAnalyzer {
 			varAndParamMap.put(paramName, paramType);
 		}
 
-		for (Declaration decl : funcDecl.getLocVardecls()) {
-			if (decl instanceof VariableDecl) {
-				VariableDecl varDecl = (VariableDecl) decl;
-				String varName = varDecl.getLabel();
-				Type varType = varDecl.getType();
-				varAndParamMap.put(varName, varType);
-			}
+		for (VariableDecl decl : funcDecl.getLocVardecls()) {
+			String varName = decl.getLabel();
+			Type varType = decl.getType();
+			varAndParamMap.put(varName, varType);
 		}
 
 		return varAndParamMap;
@@ -85,8 +147,16 @@ public class SemanticAnalyzer {
 		
 		// FIXME: Similar to checkNoDuplicateProgLabels()
 		Set<String> labels = new HashSet<String>();
+		for (Declaration decl : progAST.getDecls()){
+			if (decl instanceof FunctionDecl){
+				var funDecl = (FunctionDecl) decl;
+				labels.add(funDecl.getLabel());
+			}
+		}
 
-		for (Declaration decl : funcDecl.getLocVardecls()) {
+		List<Declaration> declarations = new ArrayList<>(funcDecl.getLocVardecls());
+		declarations.addAll(funcDecl.getParams());
+		for (Declaration decl : declarations) {
 			String label = decl.getLabel().toString();
 
 			if (labels.contains(label)) {

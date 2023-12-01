@@ -1,13 +1,14 @@
 package splat.parser.elements;
 
-public class Parameter {
+import splat.lexer.Token;
+
+public class Parameter extends Declaration{
     // Need to add some fields
-    private String label;
     private Type type;
 
     // Need to add extra arguments for setting fields in the constructor
-    public Parameter(String label, Type type) {
-        this.label = label;
+    public Parameter(String label, Type type, Token tok) {
+        super(tok, label);
         this.type = type;
     }
 

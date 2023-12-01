@@ -1,6 +1,7 @@
 package splat.parser.elements;
 
 import splat.lexer.Token;
+import splat.semanticanalyzer.SemanticAnalysisException;
 
 import java.util.Map;
 
@@ -16,7 +17,7 @@ public class ReturnExprStmt extends Statement{
     }
 
     @Override
-    public void analyze(Map<String, FunctionDecl> funcMap, Map<String, Type> varAndParamMap) {
-
+    public void analyze(Map<String, FunctionDecl> funcMap, Map<String, Type> varAndParamMap) throws SemanticAnalysisException {
+        expr.analyzeAndGetType(funcMap, varAndParamMap);
     }
 }

@@ -203,7 +203,7 @@ public class Parser {
 
 		Type type = parseType();
 
-		return new Parameter(label, type);
+		return new Parameter(label, type, new Token("null", 0, 0));
 	}
 
 	/*

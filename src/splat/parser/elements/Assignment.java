@@ -1,6 +1,7 @@
 package splat.parser.elements;
 
 import splat.lexer.Token;
+import splat.semanticanalyzer.SemanticAnalysisException;
 
 import java.util.Map;
 
@@ -23,7 +24,15 @@ public class Assignment extends Statement {
     }
 
     @Override
-    public void analyze(Map<String, FunctionDecl> funcMap, Map<String, Type> varAndParamMap) {
+    public void analyze(Map<String, FunctionDecl> funcMap, Map<String, Type> varAndParamMap) throws SemanticAnalysisException{
+        Type exprType = expr.analyzeAndGetType(funcMap, varAndParamMap);
 
+        Type labelType = varAndParamMap.get(label);
+        if (labelType == null)
+            throw new SemanticAnalysisException("Variable is not declared in assignment: " + label, getLine(), getColumn());
+
+        if (!(labelType.getValue()).equals(exprType.getValue())) {
+            throw new SemanticAnalysisException("Type mismatch in assignment", getLine(), getColumn());
+        }
     }
 }

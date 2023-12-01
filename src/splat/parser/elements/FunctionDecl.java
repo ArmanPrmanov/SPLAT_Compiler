@@ -35,6 +35,10 @@ public class FunctionDecl extends Declaration {
 	public List<Statement> getStmts() {
 		return stmts;
 	}
+
+	public ReturnType getReturnType() {
+		return returnType;
+	}
 	
 	// Fix this as well
 	public String toString() {

@@ -1,6 +1,7 @@
 package splat.parser.elements;
 
 import splat.lexer.Token;
+import splat.semanticanalyzer.SemanticAnalysisException;
 
 import java.util.List;
 import java.util.Map;
@@ -24,7 +25,14 @@ public class IfThen extends Statement{
     }
 
     @Override
-    public void analyze(Map<String, FunctionDecl> funcMap, Map<String, Type> varAndParamMap) {
+    public void analyze(Map<String, FunctionDecl> funcMap, Map<String, Type> varAndParamMap) throws SemanticAnalysisException {
+        Type exprType = expr.analyzeAndGetType(funcMap, varAndParamMap);
 
+        if (!exprType.getValue().equals("Boolean"))
+            throw new SemanticAnalysisException("IfThen expr should be Boolean:" + exprType.getValue(), getLine(), getColumn());
+
+        for (Statement stmt : thenStmts) {
+            stmt.analyze(funcMap, varAndParamMap);
+        }
     }
 }
