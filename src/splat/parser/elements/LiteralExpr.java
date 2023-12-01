@@ -1,5 +1,6 @@
 package splat.parser.elements;
 
+import splat.executor.Value;
 import splat.lexer.Token;
 import splat.semanticanalyzer.SemanticAnalysisException;
 
@@ -35,6 +36,10 @@ public class LiteralExpr extends Expression{
         throw new SemanticAnalysisException("Literal not defined WOW:" + value, getLine(), getColumn());
     }
 
+    @Override
+    public Value evaluate(Map<String, FunctionDecl> funcMap, Map<String, Value> varAndParamMap) {
+        return null;
+    }
 
 
     private boolean isLiteral(String value) {

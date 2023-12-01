@@ -3,6 +3,7 @@ package splat;
 import java.io.File;
 import java.util.List;
 
+import splat.executor.Executor;
 import splat.lexer.Lexer;
 import splat.lexer.Token;
 import splat.parser.Parser;
@@ -32,8 +33,8 @@ public class Splat {
 		 analyzer.analyze();
 		
 		// Step 4.  Executor
-		// Executor executor = new Executor(progAST);
-		// executor.runProgram();
+		 Executor executor = new Executor(progAST);
+		 executor.runProgram();
 		
 		// THE END!
 	}

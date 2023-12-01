@@ -1,5 +1,6 @@
 package splat.parser.elements;
 
+import splat.executor.Value;
 import splat.lexer.Token;
 import splat.semanticanalyzer.SemanticAnalysisException;
 
@@ -58,5 +59,10 @@ public class BinaryOpExpr extends Expression {
             return new Type("Integer");
         else
             return new Type("Boolean");
+    }
+
+    @Override
+    public Value evaluate(Map<String, FunctionDecl> funcMap, Map<String, Value> varAndParamMap) {
+        return null;
     }
 }

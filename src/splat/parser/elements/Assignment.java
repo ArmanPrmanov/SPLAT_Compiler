@@ -1,5 +1,7 @@
 package splat.parser.elements;
 
+import splat.executor.ReturnFromCall;
+import splat.executor.Value;
 import splat.lexer.Token;
 import splat.semanticanalyzer.SemanticAnalysisException;
 
@@ -34,5 +36,10 @@ public class Assignment extends Statement {
         if (!(labelType.getValue()).equals(exprType.getValue())) {
             throw new SemanticAnalysisException("Type mismatch in assignment", getLine(), getColumn());
         }
+    }
+
+    @Override
+    public void execute(Map<String, FunctionDecl> funcMap, Map<String, Value> varAndParamMap) throws ReturnFromCall {
+
     }
 }

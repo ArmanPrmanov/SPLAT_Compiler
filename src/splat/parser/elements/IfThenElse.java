@@ -1,5 +1,7 @@
 package splat.parser.elements;
 
+import splat.executor.ReturnFromCall;
+import splat.executor.Value;
 import splat.lexer.Token;
 import splat.semanticanalyzer.SemanticAnalysisException;
 
@@ -43,5 +45,10 @@ public class IfThenElse extends Statement{
         for (Statement stmt : elseStmts) {
             stmt.analyze(funcMap, varAndParamMap);
         }
+    }
+
+    @Override
+    public void execute(Map<String, FunctionDecl> funcMap, Map<String, Value> varAndParamMap) throws ReturnFromCall {
+
     }
 }

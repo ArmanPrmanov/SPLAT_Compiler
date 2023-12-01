@@ -1,5 +1,6 @@
 package splat.parser.elements;
 
+import splat.executor.Value;
 import splat.lexer.Token;
 import splat.semanticanalyzer.SemanticAnalysisException;
 
@@ -34,5 +35,10 @@ public class UnaryOpExpr extends Expression{
             throw new SemanticAnalysisException("UnaryOpExpr should be Integer:" + exprType.getValue(), getLine(), getColumn());
 
         return exprType;
+    }
+
+    @Override
+    public Value evaluate(Map<String, FunctionDecl> funcMap, Map<String, Value> varAndParamMap) {
+        return null;
     }
 }

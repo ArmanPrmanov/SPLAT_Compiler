@@ -1,5 +1,7 @@
 package splat.parser.elements;
 
+import splat.executor.ReturnFromCall;
+import splat.executor.Value;
 import splat.lexer.Token;
 import splat.semanticanalyzer.SemanticAnalysisException;
 
@@ -44,5 +46,10 @@ public class FuncStmt extends Statement{
         ReturnType returnType = funcMap.get(label).getReturnType();
         if (!returnType.type.getValue().equals("void"))
             throw new SemanticAnalysisException("returnType not void:" + returnType.type.getValue(), getLine(), getColumn());
+    }
+
+    @Override
+    public void execute(Map<String, FunctionDecl> funcMap, Map<String, Value> varAndParamMap) throws ReturnFromCall {
+
     }
 }

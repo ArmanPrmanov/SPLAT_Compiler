@@ -1,5 +1,6 @@
 package splat.parser.elements;
 
+import splat.executor.Value;
 import splat.lexer.Token;
 import splat.semanticanalyzer.SemanticAnalysisException;
 
@@ -46,5 +47,10 @@ public class FuncExpr extends Expression{
             throw new SemanticAnalysisException("returnType void:" + returnType.type.getValue(), getLine(), getColumn());
 
         return returnType.type;
+    }
+
+    @Override
+    public Value evaluate(Map<String, FunctionDecl> funcMap, Map<String, Value> varAndParamMap) {
+        return null;
     }
 }
