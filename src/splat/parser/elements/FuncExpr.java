@@ -1,10 +1,13 @@
 package splat.parser.elements;
 
+import splat.executor.ExecutionException;
+import splat.executor.ReturnFromCall;
 import splat.executor.Value;
 import splat.lexer.Token;
 import splat.semanticanalyzer.SemanticAnalysisException;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -50,7 +53,33 @@ public class FuncExpr extends Expression{
     }
 
     @Override
-    public Value evaluate(Map<String, FunctionDecl> funcMap, Map<String, Value> varAndParamMap) {
-        return null;
+    public Value evaluate(Map<String, FunctionDecl> funcMap, Map<String, Value> varAndParamMap) throws ReturnFromCall, ExecutionException {
+        FunctionDecl funcDecl = funcMap.get(label);
+        ReturnType retType = funcDecl.getReturnType();
+        Value returnValue = null;
+
+        Map<String, Value> localVarAndParamMap = new HashMap<>(varAndParamMap);
+        List<Parameter> params = funcDecl.getParams();
+
+        for (int i = 0; i < args.size(); i++) {
+            Value argValue = args.get(i).evaluate(funcMap, localVarAndParamMap);
+            localVarAndParamMap.put(params.get(i).getLabel(), argValue);
+        }
+
+        try {
+            for (Statement stmt : funcDecl.getStmts()) {
+                stmt.execute(funcMap, localVarAndParamMap);
+            }
+        } catch (ReturnFromCall retFromCall){
+            if (retType.type.getValue().equals("Integer")){
+                return new IntLiteral(retFromCall.getReturnVal().getValue());
+            } else if (retType.type.getValue().equals("Boolean")){
+                return new BoolLiteral(retFromCall.getReturnVal().getValue());
+            } else if (retType.type.getValue().equals("String")){
+                return new StringLiteral(retFromCall.getReturnVal().getValue());
+            }
+        }
+
+        return returnValue;
     }
 }

@@ -1,11 +1,13 @@
 package splat.parser.elements;
 
+import splat.executor.ExecutionException;
 import splat.executor.ReturnFromCall;
 import splat.executor.Value;
 import splat.lexer.Token;
 import splat.semanticanalyzer.SemanticAnalysisException;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -49,7 +51,23 @@ public class FuncStmt extends Statement{
     }
 
     @Override
-    public void execute(Map<String, FunctionDecl> funcMap, Map<String, Value> varAndParamMap) throws ReturnFromCall {
+    public void execute(Map<String, FunctionDecl> funcMap, Map<String, Value> varAndParamMap) throws ReturnFromCall, ExecutionException {
+        FunctionDecl funcDecl = funcMap.get(label);
 
+        Map<String, Value> localVarAndParamMap = new HashMap<>(varAndParamMap);
+        List<Parameter> params = funcDecl.getParams();
+
+        for (int i = 0; i < args.size(); i++) {
+            Value argValue = args.get(i).evaluate(funcMap, localVarAndParamMap);
+            localVarAndParamMap.put(params.get(i).getLabel(), argValue);
+        }
+        try {
+            for (Statement stmt : funcDecl.getStmts()) {
+                stmt.execute(funcMap, localVarAndParamMap);
+            }
+        } catch (ReturnFromCall retFromCall){
+            if (retFromCall.getReturnVal() != null)
+                throw new ExecutionException("Return value not null in FuncStmt:" + retFromCall.getReturnVal(), this);
+        }
     }
 }

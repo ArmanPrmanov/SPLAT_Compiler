@@ -1,17 +1,16 @@
 package splat.executor;
 
+import java.util.HashMap;
 import java.util.Map;
 
-import splat.parser.elements.FunctionDecl;
-import splat.parser.elements.ProgramAST;
-import splat.parser.elements.Statement;
+import splat.parser.elements.*;
 
 public class Executor {
 
 	private ProgramAST progAST;
 	
-	private Map<String, FunctionDecl> funcMap;
-	private Map<String, Value> progVarMap;
+	private Map<String, FunctionDecl> funcMap = new HashMap<>();
+	private Map<String, Value> progVarMap = new HashMap<>();
 	
 	public Executor(ProgramAST progAST) {
 		this.progAST = progAST;
@@ -44,6 +43,27 @@ public class Executor {
 	
 	private void setMaps() {
 		// TODO: Use setMaps() from SemanticAnalyzer as a guide
+
+		for (Declaration decl : progAST.getDecls()) {
+
+			String label = decl.getLabel().toString();
+
+			if (decl instanceof FunctionDecl) {
+				FunctionDecl funcDecl = (FunctionDecl)decl;
+				funcMap.put(label, funcDecl);
+
+			} else if (decl instanceof VariableDecl) {
+				VariableDecl varDecl = (VariableDecl)decl;
+				Type varType = varDecl.getType();
+				if (varType.getValue().equals("Integer")){
+					progVarMap.put(label, new IntLiteral(0));
+				} else if (varType.getValue().equals("Boolean")){
+					progVarMap.put(label, new BoolLiteral(false));
+				} else if (varType.getValue().equals("String")){
+					progVarMap.put(label, new StringLiteral(""));
+				}
+			}
+		}
 	}
 
 }

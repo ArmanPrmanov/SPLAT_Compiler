@@ -1,5 +1,6 @@
 package splat.parser.elements;
 
+import splat.executor.ExecutionException;
 import splat.executor.ReturnFromCall;
 import splat.executor.Value;
 import splat.lexer.Token;
@@ -33,5 +34,5 @@ public abstract class Statement extends ASTElement {
 	 */
 	 public abstract void execute(Map<String, FunctionDecl> funcMap,
 	                              Map<String, Value> varAndParamMap)
-										throws ReturnFromCall;
+			 throws ReturnFromCall, ExecutionException;
 }

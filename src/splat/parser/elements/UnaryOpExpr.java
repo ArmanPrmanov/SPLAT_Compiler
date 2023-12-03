@@ -1,5 +1,7 @@
 package splat.parser.elements;
 
+import splat.executor.ExecutionException;
+import splat.executor.ReturnFromCall;
 import splat.executor.Value;
 import splat.lexer.Token;
 import splat.semanticanalyzer.SemanticAnalysisException;
@@ -38,7 +40,15 @@ public class UnaryOpExpr extends Expression{
     }
 
     @Override
-    public Value evaluate(Map<String, FunctionDecl> funcMap, Map<String, Value> varAndParamMap) {
-        return null;
+    public Value evaluate(Map<String, FunctionDecl> funcMap, Map<String, Value> varAndParamMap) throws ExecutionException, ReturnFromCall {
+        Value expr_val = expr.evaluate(funcMap, varAndParamMap);
+
+        if (unaryOp.value.equals("not")) {
+            return new BoolLiteral(!(boolean) expr_val.getValue());
+        } else if (unaryOp.value.equals("-")) {
+            return new IntLiteral(-(int)expr_val.getValue());
+        }
+
+        throw new ExecutionException("UnaryOp wrong operator", this);
     }
 }

@@ -1,5 +1,6 @@
 package splat.parser.elements;
 
+import splat.executor.ExecutionException;
 import splat.executor.ReturnFromCall;
 import splat.executor.Value;
 import splat.lexer.Token;
@@ -26,20 +27,20 @@ public class Assignment extends Statement {
     }
 
     @Override
-    public void analyze(Map<String, FunctionDecl> funcMap, Map<String, Type> varAndParamMap) throws SemanticAnalysisException{
+    public void analyze(Map<String, FunctionDecl> funcMap, Map<String, Type> varAndParamMap) throws SemanticAnalysisException {
         Type exprType = expr.analyzeAndGetType(funcMap, varAndParamMap);
-
         Type labelType = varAndParamMap.get(label);
+
         if (labelType == null)
             throw new SemanticAnalysisException("Variable is not declared in assignment: " + label, getLine(), getColumn());
-
         if (!(labelType.getValue()).equals(exprType.getValue())) {
             throw new SemanticAnalysisException("Type mismatch in assignment", getLine(), getColumn());
         }
     }
 
     @Override
-    public void execute(Map<String, FunctionDecl> funcMap, Map<String, Value> varAndParamMap) throws ReturnFromCall {
-
+    public void execute(Map<String, FunctionDecl> funcMap, Map<String, Value> varAndParamMap) throws ReturnFromCall, ExecutionException {
+        Value exprValue = expr.evaluate(funcMap, varAndParamMap);
+        varAndParamMap.put(label, exprValue);
     }
 }

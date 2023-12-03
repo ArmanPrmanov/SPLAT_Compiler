@@ -1,5 +1,6 @@
 package splat.parser.elements;
 
+import splat.executor.ExecutionException;
 import splat.executor.Value;
 import splat.lexer.Token;
 import splat.semanticanalyzer.SemanticAnalysisException;
@@ -37,8 +38,19 @@ public class LiteralExpr extends Expression{
     }
 
     @Override
-    public Value evaluate(Map<String, FunctionDecl> funcMap, Map<String, Value> varAndParamMap) {
-        return null;
+    public Value evaluate(Map<String, FunctionDecl> funcMap, Map<String, Value> varAndParamMap) throws ExecutionException {
+
+        if (isIntLiteral(value))
+            return new IntLiteral(Integer.parseInt(value));
+
+        if (isBoolLiteral(value))
+            return new BoolLiteral(value.equals("true"));
+
+        if (isStringLiteral(value))
+            return new StringLiteral(removeQuotes(value));
+
+        //UNREACHABLE EXCEPTION WOW
+        throw new ExecutionException("Literal is strange WOW:" + value, getLine(), getColumn());
     }
 
 
@@ -61,6 +73,14 @@ public class LiteralExpr extends Expression{
     }
 
     private boolean isStringLiteral(String value) {
-        return value.charAt(0) == '"' || value.charAt(value.length() - 1) == '"';
+        return value.charAt(0) == '"' && value.charAt(value.length() - 1) == '"';
+    }
+
+    public static String removeQuotes(String input) {
+        if (input.length() >= 2 && input.charAt(0) == '"' && input.charAt(input.length() - 1) == '"') {
+            return input.substring(1, input.length() - 1);
+        } else {
+            return input;
+        }
     }
 }
