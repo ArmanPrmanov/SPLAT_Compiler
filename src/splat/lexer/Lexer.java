@@ -110,6 +110,7 @@ public class Lexer {
 							continue;
 						}
 						else if (currentCharValue == '"') {
+							tokenValue.append(currentCharValue);
 							state = LexState.kFormStringValue;
 							continue;
 						}

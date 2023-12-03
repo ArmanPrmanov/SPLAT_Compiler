@@ -595,6 +595,6 @@ public class Parser {
 	}
 
 	private boolean isStringLiteral(String value) {
-        return value.charAt(0) == '"' || value.charAt(value.length() - 1) == '"';
+        return value.charAt(0) == '"' && value.charAt(value.length() - 1) == '"';
 	}
 }
