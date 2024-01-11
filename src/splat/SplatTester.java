@@ -68,6 +68,9 @@ public class  SplatTester {
 			int expectedResultCode = getExpectedResultCode(testFile.getName());
 			resCodeCount[expectedResultCode]++;
 
+			//if (!testFile.getName().equals("028_01_goodexecution.splat"))
+			//	continue;
+
 			// Run the actual test
 			runTest(testFile);
 		}
